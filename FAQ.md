@@ -19,8 +19,6 @@ Yes. TIP20 has native role-based access control through:
 - `grantRole(bytes32 role, address account)`
 - `revokeRole(bytes32 role, address account)`
 - `renounceRole(bytes32 role)`
-- `hasRole(address account, bytes32 role)`
-- `getRoleAdmin(bytes32 role)`
 - `setRoleAdmin(bytes32 role, bytes32 adminRole)`
 
 TIP20 also exposes built-in role constants such as:
@@ -30,9 +28,20 @@ TIP20 also exposes built-in role constants such as:
 - `UNPAUSE_ROLE`
 - `BURN_BLOCKED_ROLE`
 
+## What is the TIP20 alternative to OpenZeppelin role read helpers?
+
+TIP20 does not expose OpenZeppelin-style role read helpers such as `hasRole(role, account)`, `getRoleAdmin(role)`, or enumerable role-member reads in the public interface.
+
+For off-chain reads, index TIP20 role events:
+
+- `RoleMembershipUpdated(role, account, sender, hasRole)` for current role membership.
+- `RoleAdminUpdated(role, newAdminRole, sender)` for role admin changes.
+
+For contract logic, do not read TIP20 role state directly. Call the permissioned TIP20 function and let the precompile enforce authorization. If the caller lacks the required role, the call reverts with `Unauthorized`.
+
 ## Can arbitrary custom roles be created on TIP20?
 
-Custom `bytes32` roles can be granted and checked with TIP20's RBAC functions, but only protocol-defined roles affect native TIP20 behavior.
+Custom `bytes32` roles can be granted through TIP20's RBAC functions and tracked from role events, but only protocol-defined roles affect native TIP20 behavior.
 
 For example, a custom role like `TRANSFER_AGENT_ROLE` can exist as role data, but TIP20 will not automatically attach new native behavior to it unless the protocol implementation is extended or another contract explicitly checks that role.
 
