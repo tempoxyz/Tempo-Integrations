@@ -12,6 +12,22 @@ No. Custom per-token methods cannot be added to the TIP20 token address itself.
 
 If a method must appear on the token contract, that requires a protocol-level TIP20 extension. A separate Solidity contract can expose custom methods, but those methods live on the separate contract, not on the TIP20 token address.
 
+## How should a rebasing ERC20 migrate to TIP20?
+
+Do not use TIP20 rewards to recreate rebasing behavior. TIP20 rewards have been deprecated, and even before deprecation they accrued through opt-in reward accounting rather than making every holder's ERC20 `balanceOf` increase automatically.
+
+For rebasing UX, use an rToken-style wrapper: a wrapper token around the yield-bearing TIP20 whose `balanceOf` is derived from internal shares multiplied by an exchange-rate or multiplier. Yield, donations, or issuer-side accrual update the multiplier, while transfers move shares. This preserves the user-facing pattern where balances can grow at the ERC20/TIP20 wrapper level without requiring a separate `claimRewards()` flow.
+
+Migration shape:
+
+- Snapshot the old rebasing ERC20 balances at a cutoff.
+- Deploy or use a yield-bearing TIP20 as the underlying settlement asset.
+- Deploy an rToken wrapper for that underlying asset.
+- Mint wrapper shares so each holder's initial wrapper `balanceOf` matches their snapshotted rebasing balance at the current index.
+- Route future yield/accrual into the wrapper multiplier rather than TIP20 rewards.
+
+Reference implementation: [`tempoxyz/rtokens`](https://github.com/tempoxyz/rtokens), especially `src/RTokenWrapper.sol`.
+
 ## What are the TIP20 alternatives to `increaseAllowance` and `decreaseAllowance`?
 
 TIP20/USDY does not expose OpenZeppelin-style atomic allowance delta helpers such as `increaseAllowance(spender, addedValue)` or `decreaseAllowance(spender, subtractedValue)`.
