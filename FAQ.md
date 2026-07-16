@@ -150,7 +150,9 @@ Use the standard TIP20 implementation with Chainlink's existing CCIP token pool.
 9. Provide issuer-controlled multisig addresses for each relevant chain so token-pool and CCT ownership can be transferred after deployment.
 10. Deploy the lane, test transfers in both directions, verify roles and rate limits, and complete the ownership handoff.
 
-The Figure PRIME integration selected Solana to Tempo with lock-and-mint because PRIME had deeper liquidity on Solana. Figure approved a direct mainnet deployment. At the cited supply of 156,221,832 PRIME, the proposed 1–2% transfer capacity was approximately 1.56 million–3.12 million tokens.## What does the TIP20 `currency` field mean?
+The Figure PRIME integration selected Solana to Tempo with lock-and-mint because PRIME had deeper liquidity on Solana. Figure approved a direct mainnet deployment. At the cited supply of 156,221,832 PRIME, the proposed 1–2% transfer capacity was approximately 1.56 million–3.12 million tokens.
+
+## What does the TIP20 `currency` field mean?
 
 `currency` is an immutable protocol classification and eligibility tag. It is not a price feed and does not select a trading pair.
 
